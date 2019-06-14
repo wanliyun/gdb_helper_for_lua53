@@ -1,15 +1,39 @@
 define luast
         set $p = L->ci
         while ($p != &(L->base_ci) )
+                printf "\n\n"
                 if ($p->func.tt_ == 70)
                         set $ugc= (union GCUnion*)$p->func->value_.gc
                         set $proto = $ugc->cl.l.p.sp
-                        set $utsv=(char*)($proto->source)                      
+                        set $utsv=(char*)($proto->source)
                         set $filename = $utsv + 24
                         set $lineno = $proto->lineinfo[ $p->u.l.savedpc - $proto->code -1 ]
                         printf "0x%x LUA FUNCTION : %d %s\n", $p, $lineno, $filename
-                else
+                        printf "nargs=%d,locvars=%d\n",$proto->numparams,$proto->sizelocvars
+                        
+                        set $ix=1
+                        while($ix<=$proto->sizelocvars)
+                                set $loc = $proto->locvars+$ix
+                                set $locname=$loc->varname
+                                if($locname != 0)
+                                        printf "local %d name=%s\n",$ix, ((char*)$locname) + 24
+                                end     
+                                set $ix=$ix+1
+                        end     
+                        
+                        set $ix = 1
+                        while ($ix <=$proto->sizelocvars)
+                                set $arg = $p->func+$ix
+                                if ($arg->tt_ == 68)
+                                        set $ugc= (union GCUnion*)$arg->value_.gc
+                                        set $strv = &($ugc.ts)
+                                        set $chstr=(char*)$strv
+                                        printf "arg %d val=%s\n",$ix, $chstr+24
+                                end     
+                                set $ix=$ix+1
+                        end     
+                else    
                         printf "tt %d\n",$p->func.tt_
-                end
+                end     
                 set $p = $p->previous
-        end
+        end 

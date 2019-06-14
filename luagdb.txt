@@ -1,0 +1,15 @@
+define luast
+        set $p = L->ci
+        while ($p != &(L->base_ci) )
+                if ($p->func.tt_ == 70)
+                        set $ugc= (union GCUnion*)$p->func->value_.gc
+                        set $proto = $ugc->cl.l.p.sp
+                        set $utsv=(char*)($proto->source)                      
+                        set $filename = $utsv + 24
+                        set $lineno = $proto->lineinfo[ $p->u.l.savedpc - $proto->code -1 ]
+                        printf "0x%x LUA FUNCTION : %d %s\n", $p, $lineno, $filename
+                else
+                        printf "tt %d\n",$p->func.tt_
+                end
+                set $p = $p->previous
+        end
